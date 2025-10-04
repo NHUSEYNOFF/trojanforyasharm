@@ -46,7 +46,7 @@ canvas#matrix {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: rgba(0,0,0,0); /* mavi ton */
+    background-color: rgba(0,0,0,0);
     border-radius: 15px;
     display: flex;
     justify-content: center;
@@ -146,7 +146,7 @@ function drawMatrix(){
 }
 setInterval(drawMatrix,50);
 
-// KONFETİ PARTICLE (rəngli div-lər, sonsuz)
+// KONFETİ PARÇALARI
 let confettiList = [];
 
 function createConfetti(){
@@ -159,7 +159,7 @@ function createConfetti(){
         confetti.style.top = Math.random() * window.innerHeight + 'px';
         document.body.appendChild(confetti);
         confetti.dx = (Math.random()-0.5)*10;
-        confetti.dy = Math.random()*3 + 2; // yavaş düşmə
+        confetti.dy = Math.random()*3 + 2;
         confettiList.push(confetti);
     }
 }
