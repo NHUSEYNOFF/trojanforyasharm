@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TROJAN</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap');
+
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Courier Prime', monospace;
+}
+
+/* Arxa fon şəkli */
+#background-img {
+    position: fixed;
+    top:0; left:0;
+    width:100%;
+    height:100%;
+    background: url('https://i.ytimg.com/vi/GqiEs40x9QU/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLAwK_-duPZHp-MRs-EE1C734Uan3Q') no-repeat center center/cover;
+    z-index: -2;
+}
+
+/* MATRIX CANVAS */
+canvas#matrix {
+    position: absolute;
+    top:0; left:0;
+    width:100%;
+    height:100%;
+    z-index: -1;
+}
+
+/* Məktub / zərf */
+.envelope {
+    position: absolute;
+    z-index: 1;
+    width: 35%;
+    max-width: 550px;
+    height: 45%;
+    max-height: 450px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0,0,0,0); /* mavi ton */
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px;
+}
+
+/* Button */
+#openBtn {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: none;
+    background-color: rgb(24, 91, 0);
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1em;
+    z-index: 2;
+    transition: transform 0.3s;
+}
+
+#openBtn:hover {
+    transform: scale(1.1);
+}
+
+/* Mesaj */
+.message {
+    position: absolute;
+    top: 20px;
+    width: 90%;
+    opacity: 0;
+    transition: opacity 1s, transform 0.8s;
+    color: #fff;
+    text-align: left;
+    padding: 10px;
+    background-color: rgba(0,0,0,0.6);
+    border-radius: 5px;
+    transform: translateY(-20px);
+    pointer-events: none;
+}
+
+.message.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Konfeti parçaları */
+.confetti-piece {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    pointer-events: none;
+    border-radius: 2px;
+    opacity: 0.9;
+}
+</style>
+</head>
+<body>
+<div id="background-img"></div>
+<canvas id="matrix"></canvas>
+
+<!-- Məktub -->
+<div class="envelope" id="envelope">
+    <button id="openBtn">Mənə toxunma</button>
+    <div class="message" id="message">
+        <h1>Müəllimlər Gününüz Mübarək!</h1>
+        <p>Əziz <span class="name">Yaşar müəllim</span>,</p>
+        <p>Sizi 5 Oktyabr – Müəllimlər Günü münasibətilə ürəkdən təbrik edirəm. Sizə sağlamlıq, xoşbəxtlik və fəaliyyətinizdə uğurlar arzu edirəm. Ps: informatika müəllimi üçün sadə təbrik yazmaq istəmədim)</p>
+    </div>
+</div>
+
+<script>
+// MATRIX EFFEKTİ
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const letters = '01';
+const fontSize = 20;
+const columns = Math.floor(canvas.width / fontSize);
+const drops = Array(columns).fill(0);
+
+function drawMatrix(){
+    ctx.fillStyle = 'rgba(0,0,0,0.05)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = '#00ff00';
+    ctx.font = fontSize+'px Courier Prime';
+    for(let i=0;i<drops.length;i++){
+        const text = letters.charAt(Math.floor(Math.random()*letters.length));
+        ctx.fillText(text,i*fontSize,drops[i]);
+        drops[i] += fontSize;
+        if(drops[i] > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    }
+}
+setInterval(drawMatrix,50);
+
+// KONFETİ PARTICLE (rəngli div-lər, sonsuz)
+let confettiList = [];
+
+function createConfetti(){
+    const colors = ['#ff0','#f00','#0f0','#0ff','#f0f','#fff','#ffa500'];
+    for(let i=0;i<100;i++){
+        const confetti = document.createElement('div');
+        confetti.classList.add('confetti-piece');
+        confetti.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
+        confetti.style.left = Math.random() * window.innerWidth + 'px';
+        confetti.style.top = Math.random() * window.innerHeight + 'px';
+        document.body.appendChild(confetti);
+        confetti.dx = (Math.random()-0.5)*10;
+        confetti.dy = Math.random()*3 + 2; // yavaş düşmə
+        confettiList.push(confetti);
+    }
+}
+
+function animateConfettiForever(){
+    confettiList.forEach((el)=>{
+        let top=parseFloat(el.style.top);
+        let left=parseFloat(el.style.left);
+        top += el.dy;
+        left += el.dx;
+        if(top > window.innerHeight) top = -10;
+        if(left > window.innerWidth) left = 0;
+        if(left < 0) left = window.innerWidth;
+        el.style.top = top + 'px';
+        el.style.left = left + 'px';
+    });
+    requestAnimationFrame(animateConfettiForever);
+}
+
+// Button klik
+document.getElementById('openBtn').addEventListener('click', function(){
+    this.style.display = 'none';
+    document.getElementById('message').classList.add('show');
+    createConfetti();
+    animateConfettiForever();
+});
+</script>
+</body>
+</html>
